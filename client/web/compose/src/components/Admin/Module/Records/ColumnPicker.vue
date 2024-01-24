@@ -33,6 +33,7 @@
       <field-picker
         :module="module"
         :fields.sync="filteredFields"
+        :field-subset="fieldSubset"
         style="height: 71vh;"
       />
     </b-modal>
@@ -62,6 +63,12 @@ export default {
       type: Array,
       required: true,
       default: () => [],
+    },
+
+    fieldSubset: {
+      type: Array,
+      required: false,
+      default: () => null,
     },
 
     disabled: {

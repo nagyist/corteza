@@ -69,6 +69,10 @@ export interface Options {
   inlineRecordEditEnabled: boolean;
   filterPresets: FilterPreset[];
   showRecordPerPageOption: boolean;
+
+  textStyles: {
+    noWrapFields: Array<string>
+  }
 }
 
 const defaults: Readonly<Options> = Object.freeze({
@@ -122,6 +126,10 @@ const defaults: Readonly<Options> = Object.freeze({
   inlineRecordEditEnabled: false,
   filterPresets: [],
   showRecordPerPageOption: false,
+
+  textStyles: {
+    noWrapFields: []
+  }
 })
 
 export class PageBlockRecordList extends PageBlock {
@@ -189,6 +197,10 @@ export class PageBlockRecordList extends PageBlock {
 
     if (o.selectionButtons) {
       this.options.selectionButtons = o.selectionButtons.map(b => new Button(b))
+    }
+
+    if (o.textStyles) {
+      this.options.textStyles = o.textStyles
     }
   }
 

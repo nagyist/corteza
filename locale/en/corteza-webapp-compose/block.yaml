@@ -496,6 +496,9 @@ recordList:
       permissions: Permissions
     recordDisplayOptions: On record click
     recordSelectorDisplayOptions: On record selector click
+    textStyles: Text Styles
+    configureNonWrappingFelids: Configure non-wrapping fields
+    showFullText: Show full text
   recordPage: record page
   refField:
     footnote: Field that links records with the parent record
