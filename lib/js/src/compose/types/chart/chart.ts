@@ -3,6 +3,8 @@ import {
   Dimension,
   Metric,
   TemporalDataPoint,
+  formatChartTooltip,
+  formatChartValue,
 } from './util'
 import { getColorschemeColors } from '../../../shared'
 
@@ -87,6 +89,9 @@ export default class Chart extends BaseChart {
             overflow: 'break',
             hideOverlap: true,
             rotate: dimension.rotateLabel,
+            formatter: (value: string | number): string => {
+              return formatChartValue(value, { format: '0.0000', suffix: 'B', prefix: 'A' })
+            },
           },
           axisTick: {
             show: false,
@@ -108,6 +113,9 @@ export default class Chart extends BaseChart {
             overflow: 'break',
             hideOverlap: true,
             rotate: yAxis.rotateLabel,
+            formatter: (value: string | number): string => {
+              return formatChartValue(value, { format: '0.0000', suffix: 'B', prefix: 'A' })
+            },
           },
           axisLine: {
             show: false,
@@ -141,9 +149,6 @@ export default class Chart extends BaseChart {
 
     options.series = datasets.map(({ type, label, data, stack, tooltip, fill, smooth, step, roseType, symbol }: any, index: number) => {
       const { fixed, relative } = tooltip
-
-      const tooltipFormatter = t?.formatting ? t.formatting : `{a}<br />{b} : {c}${relative ? ' ({d}%)' : ''}`
-      const labelFormatter = `{@[1]}${relative ? ' ({d}%)' : ''}`
 
       // We should render the first metric in the dataset as the last
       const z = (datasets.length - 1) - index
@@ -188,11 +193,19 @@ export default class Chart extends BaseChart {
           center: ['50%', '55%'],
           tooltip: {
             trigger: 'item',
-            formatter: tooltipFormatter,
+            formatter: function (params: { seriesName: string, name: string, value: string, percent: string }): string {
+              const { seriesName = '', name = '', value = '', percent = '' } = params
+              return t?.formatting
+                ? formatChartTooltip(t?.formatting, params)
+                : `${seriesName}<br />${name} : ${formatChartValue(value, { format: '0.0000', suffix: 'B', prefix: 'A' })}${relative ? ` (${percent}%)` : ''}`
+            },
           },
           label: {
             ...lbl,
-            formatter: labelFormatter,
+            formatter: function (params: { seriesName: string, name: string, value: string | number, percent: string | number }): string {
+              const { value = '' || 0 } = params
+              return formatChartValue(value, { format: '0.0000', suffix: 'A', prefix: 'B' })
+            },
           },
           itemStyle: {
             borderRadius: 5,
@@ -256,14 +269,30 @@ export default class Chart extends BaseChart {
           symbolSize: type === 'scatter' ? 16 : 10,
           tooltip: {
             trigger: 'axis',
-            formatter: tooltipFormatter,
+            // we can either
+            // add formatting to the value and apply tooltip if trigger: 'item'
+            // display the same tooltip format name <br/> seriesName value if trigger: 'axis'
+            formatter: function (params: { seriesName: string, name: string, value: Array<string> | Array<number>, percent: string | number }): string {
+              const { value = [], percent = '' || 0 } = params
+
+              return t?.formatting
+                ? formatChartTooltip(t?.formatting, { ...params, value: value[1].toString(), percent: percent.toString() })
+                : `${formatChartValue(value[1], { format: '0.0000', suffix: 'B', prefix: 'A' })}${relative ? ` (${percent}%)` : ''}`
+            },
           },
           label: {
             show: fixed,
             position: 'inside',
             align: 'center',
             verticalAlign: 'middle',
-            formatter: labelFormatter,
+            tooltip: {
+              trigger: 'axis',
+            },
+            formatter: function (params: { seriesName: string, name: string, value: Array<any>, percent: string | number }): string {
+              const { value = [], percent = '' || 0 } = params
+
+              return `${formatChartValue(value[1], { format: '0.0000', suffix: 'B', prefix: 'A' })}${relative ? ` (${percent}%)` : ''}`
+            },
           },
           data,
         }

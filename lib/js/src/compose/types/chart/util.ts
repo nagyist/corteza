@@ -1,3 +1,6 @@
+import numeral from 'numeral'
+import * as fmt from '../../../formatting'
+
 export const rgbaRegex = /^rgba\((\d+),.*?(\d+),.*?(\d+),.*?(\d*\.?\d*)\)$/
 
 const ln = (n: number) => Math.round(n < 0 ? 255 + n : (n > 255) ? n - 255 : n)
@@ -240,6 +243,53 @@ export const hasRelativeDisplay = ({ type }: KV) => isRadialChart({ type })
 
 // Makes a standarised alias from modifier or dimension report option
 export const makeAlias = ({ alias, aggregate, modifier, field }: Metric) => alias || `${aggregate || modifier || 'none'}_${field}`.toLocaleLowerCase()
+
+interface FormatConfig {
+  format?: string,
+  prefix?: string,
+  suffix?: string
+}
+
+export function formatChartValue (value: string | number, formatConfig?: FormatConfig): string {
+  let n: number | string
+  // if value contains alphabetic chars parseFloat() will return NaN
+  // and n will equal 0
+  const containsAlphabeticChars = isNaN(Number(value))
+  let result = ''
+
+  if (!containsAlphabeticChars) {
+    switch (typeof value) {
+      case 'string':
+        n = parseFloat(value)
+        break
+      case 'number':
+        n = value
+        break
+      default:
+        n = 0
+    }
+
+    if (formatConfig?.format) {
+      result = numeral(n).format(formatConfig.format)
+    } else {
+      result = fmt.number(n)
+    }
+  }
+
+  return ` ${formatConfig?.prefix ?? ''} ${result || value} ${formatConfig?.suffix ?? ''}`
+}
+
+export function formatChartTooltip (
+  tooltip: string,
+  params: { seriesName: string, name: string, value: string, percent: string }): string {
+  const { seriesName = '', name = '', value = '', percent = '' } = params
+
+  return tooltip
+    .replace('{a}', seriesName)
+    .replace('{b}', name)
+    .replace('{c}', value)
+    .replace('{d}', percent)
+}
 
 const chartUtil = {
   dimensionFunctions,
