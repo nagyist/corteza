@@ -593,6 +593,7 @@
                 />
               </b-form-group>
             </b-col>
+
             <b-col
               cols="12"
               md="6"
@@ -610,6 +611,22 @@
           </b-row>
 
           <b-row>
+            <b-col
+              v-if="!options.hideAddButton"
+              cols="12"
+              md="6"
+            >
+              <b-form-group
+                :label="$t('recordList.record.addRecordOptions')"
+                label-class="text-primary"
+              >
+                <b-form-select
+                  v-model="options.addRecordDisplayOption"
+                  :options="recordDisplayOptions"
+                />
+              </b-form-group>
+            </b-col>
+
             <b-col
               cols="12"
               md="6"

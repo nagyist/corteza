@@ -494,6 +494,7 @@ recordList:
       permissions: Permissions
     recordDisplayOptions: On record click
     recordSelectorDisplayOptions: On record selector click
+    addRecordOptions: On add record click 
   recordPage: record page
   refField:
     footnote: Field that links records with the parent record
