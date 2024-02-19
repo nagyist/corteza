@@ -435,6 +435,7 @@
                       :icon="['fas', 'ellipsis-v']"
                     />
                   </template>
+
                   <template v-if="inlineEditing">
                     <b-dropdown-item
                       v-if="isCloneRecordActionVisible"
@@ -1460,6 +1461,11 @@ export default {
         return
       }
 
+      if (this.options.openInEditMode) {
+        this.handleEditRecordAction(recordID)
+        return
+      }
+
       if (this.options.enableRecordPageNavigation) {
         this.loadPaginationRecords({
           filter: {
@@ -1993,7 +1999,7 @@ export default {
     },
 
     handleEditRecordAction (recordID) {
-      if (this.inModal) {
+      if (this.inModal || this.options.recordDisplayOption === 'modal') {
         this.$root.$emit('show-record-modal', {
           recordID: recordID,
           recordPageID: this.recordPageID,
