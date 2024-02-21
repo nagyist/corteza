@@ -141,16 +141,16 @@ export class PageBlockRecordList extends PageBlock {
 
     Apply(this.options, o, CortezaID, 'moduleID')
 
-    Apply(this.options, o, String, 
-       'prefilter',
-       'presort',
-       'selectMode',
-       'positionField',
-       'refField',
-       'recordDisplayOption',
-       'magnifyOption',
-       'recordSelectorDisplayOption',
-       'addRecordDisplayOption'
+    Apply(this.options, o, String,
+      'prefilter',
+      'presort',
+      'selectMode',
+      'positionField',
+      'refField',
+      'recordDisplayOption',
+      'magnifyOption',
+      'recordSelectorDisplayOption',
+      'addRecordDisplayOption'
     )
 
     Apply(this.options, o, Number, 'perPage', 'refreshRate')

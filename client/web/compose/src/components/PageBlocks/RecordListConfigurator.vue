@@ -612,22 +612,6 @@
 
           <b-row>
             <b-col
-              v-if="!options.hideAddButton"
-              cols="12"
-              md="6"
-            >
-              <b-form-group
-                :label="$t('recordList.record.addRecordOptions')"
-                label-class="text-primary"
-              >
-                <b-form-select
-                  v-model="options.addRecordDisplayOption"
-                  :options="recordDisplayOptions"
-                />
-              </b-form-group>
-            </b-col>
-
-            <b-col
               cols="12"
               md="6"
             >
@@ -640,6 +624,22 @@
                   switch
                   invert
                   :labels="checkboxLabel"
+                />
+              </b-form-group>
+            </b-col>
+
+            <b-col
+              cols="12"
+              md="6"
+            >
+              <b-form-group
+                :label="$t('recordList.record.addRecordOptions')"
+                label-class="text-primary"
+              >
+                <b-form-select
+                  v-model="options.addRecordDisplayOption"
+                  :options="recordCreateOptions"
+                  :disabled="options.hideAddButton"
                 />
               </b-form-group>
             </b-col>
@@ -879,6 +879,14 @@ export default {
         { value: 'sameTab', text: this.$t('recordList.record.openInSameTab') },
         { value: 'newTab', text: this.$t('recordList.record.openInNewTab') },
         { value: 'modal', text: this.$t('recordList.record.openInModal') },
+      ]
+    },
+
+    recordCreateOptions () {
+      return [
+        { value: 'sameTab', text: this.$t('recordList.record.createInSameTab') },
+        { value: 'newTab', text: this.$t('recordList.record.createInNewTab') },
+        { value: 'modal', text: this.$t('recordList.record.createInModal') },
       ]
     },
 
