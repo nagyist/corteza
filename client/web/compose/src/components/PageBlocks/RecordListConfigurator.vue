@@ -636,7 +636,7 @@
                 label-class="text-primary"
               >
                 <c-input-checkbox
-                  v-model="options.openInEditMode"
+                  v-model="options.openRecordInEditMode"
                   switch
                   :labels="checkboxLabel"
                 />

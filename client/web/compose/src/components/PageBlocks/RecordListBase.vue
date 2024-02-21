@@ -321,7 +321,7 @@
               :key="`${index}${item.r.recordID}`"
               :class="{ 'pointer': !(options.editable && editing), }"
               :variant="inlineEditing && item.r.deletedAt ? 'warning' : ''"
-              @click="handleRowClicked(item)"
+              @click="handleRowClick(item)"
             >
               <b-td
                 v-if="options.draggable && inlineEditing"
@@ -1456,13 +1456,13 @@ export default {
       this.processing = false
     },
 
-    handleRowClicked ({ r: { recordID } }) {
+    handleRowClick ({ r: { recordID } }) {
       if ((this.options.editable && this.editing) || (!this.recordPageID && !this.options.rowViewUrl)) {
         return
       }
 
-      if (this.options.openInEditMode) {
-        this.handleEditRecordAction(recordID)
+      if (this.options.openRecordInEditMode) {
+        this.openRecordInEditMode(recordID)
         return
       }
 
@@ -1489,6 +1489,26 @@ export default {
         this.$root.$emit('show-record-modal', {
           recordID,
           recordPageID: this.recordPageID,
+        })
+      } else if (this.options.recordDisplayOption === 'newTab') {
+        window.open(this.$router.resolve(route).href)
+      } else {
+        this.$router.push(route)
+      }
+    },
+
+    openRecordInEditMode (recordID) {
+      const route = {
+        name: this.options.rowEditUrl || 'page.record.edit',
+        params: { pageID: this.recordPageID, recordID },
+        query: null,
+      }
+
+      if (this.inModal || this.options.recordDisplayOption === 'modal') {
+        this.$root.$emit('show-record-modal', {
+          recordID: recordID,
+          recordPageID: this.recordPageID,
+          edit: true,
         })
       } else if (this.options.recordDisplayOption === 'newTab') {
         window.open(this.$router.resolve(route).href)
@@ -1999,7 +2019,7 @@ export default {
     },
 
     handleEditRecordAction (recordID) {
-      if (this.inModal || this.options.recordDisplayOption === 'modal') {
+      if (this.inModal) {
         this.$root.$emit('show-record-modal', {
           recordID: recordID,
           recordPageID: this.recordPageID,
