@@ -1461,11 +1461,6 @@ export default {
         return
       }
 
-      if (this.options.openRecordInEditMode) {
-        this.openRecordInEditMode(recordID)
-        return
-      }
-
       if (this.options.enableRecordPageNavigation) {
         this.loadPaginationRecords({
           filter: {
@@ -1475,9 +1470,19 @@ export default {
         })
       }
 
+      if (this.options.recordDisplayOption === 'modal' || this.inModal) {
+        this.$root.$emit('show-record-modal', {
+          recordID,
+          recordPageID: this.recordPageID,
+          edit: this.options.openRecordInEditMode,
+        })
+        return
+      }
+
       const pageID = this.recordPageID
+      const name = this.options.openRecordInEditMode ? this.options.rowEditUrl || 'page.record.edit' : this.options.rowViewUrl || 'page.record'
       const route = {
-        name: this.options.rowViewUrl || 'page.record',
+        name,
         params: {
           pageID,
           recordID,
@@ -1485,32 +1490,7 @@ export default {
         query: null,
       }
 
-      if (this.options.recordDisplayOption === 'modal' || this.inModal) {
-        this.$root.$emit('show-record-modal', {
-          recordID,
-          recordPageID: this.recordPageID,
-        })
-      } else if (this.options.recordDisplayOption === 'newTab') {
-        window.open(this.$router.resolve(route).href)
-      } else {
-        this.$router.push(route)
-      }
-    },
-
-    openRecordInEditMode (recordID) {
-      const route = {
-        name: this.options.rowEditUrl || 'page.record.edit',
-        params: { pageID: this.recordPageID, recordID },
-        query: null,
-      }
-
-      if (this.inModal || this.options.recordDisplayOption === 'modal') {
-        this.$root.$emit('show-record-modal', {
-          recordID: recordID,
-          recordPageID: this.recordPageID,
-          edit: true,
-        })
-      } else if (this.options.recordDisplayOption === 'newTab') {
+      if (this.options.recordDisplayOption === 'newTab') {
         window.open(this.$router.resolve(route).href)
       } else {
         this.$router.push(route)
