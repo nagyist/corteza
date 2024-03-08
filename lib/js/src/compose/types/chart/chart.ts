@@ -268,10 +268,16 @@ export default class Chart extends BaseChart {
           symbol,
           symbolSize: type === 'scatter' ? 16 : 10,
           tooltip: {
+            // pass trigger type
             trigger: 'axis',
             // we can either
             // add formatting to the value and apply tooltip if trigger: 'item'
             // display the same tooltip format name <br/> seriesName value if trigger: 'axis'
+            // works when trigger is set to axis
+            valueFormatter: (value: string | number): string => {
+              return formatChartValue(value, { format: '0.0000', suffix: 'B', prefix: 'A' })
+            },
+            // works when trigger is set to item
             formatter: function (params: { seriesName: string, name: string, value: Array<string> | Array<number>, percent: string | number }): string {
               const { value = [], percent = '' || 0 } = params
 

@@ -33,7 +33,21 @@
         <b-col
           cols="12"
           md="6"
-          offset-md="6"
+        >
+          <b-form-group
+            label="Number format"
+            label-class="text-primary"
+          >
+            <b-input
+              v-model="report.tooltip.formatting"
+              placeholder="0.00"
+            />
+          </b-form-group>
+        </b-col>
+
+        <b-col
+          cols="12"
+          md="6"
         >
           <b-form-group
             :label="$t('edit.metric.options.label')"
@@ -59,6 +73,110 @@
           </b-form-group>
         </b-col>
       </b-row>
+
+      <b-row>
+        <b-col
+          cols="12"
+          md="6"
+        >
+          <b-form-group
+            label="Prefix"
+            label-class="text-primary"
+          >
+            <b-input
+              v-model="report.tooltip.formatting"
+              placeholder="A"
+            />
+          </b-form-group>
+        </b-col>
+        <b-col
+          cols="12"
+          md="6"
+        >
+          <b-form-group
+            label="Suffix"
+            label-class="text-primary"
+          >
+            <b-input
+              v-model="report.tooltip.formatting"
+              placeholder="$"
+            />
+          </b-form-group>
+        </b-col>
+      </b-row>
+    </template>
+
+    <template #additional-config="{ report }">
+      <hr>
+      <div class="px-3">
+        <h5 class="mb-3">
+          {{ $t('edit.additionalConfig.tooltip.label') }}
+        </h5>
+
+        <b-row>
+          <b-col
+            cols="12"
+            md="6"
+          >
+            <b-form-group
+              :label="$t('edit.additionalConfig.tooltip.formatting.label')"
+              :description="$t('edit.additionalConfig.tooltip.formatting.description')"
+              label-class="text-primary"
+            >
+              <b-input
+                v-model="report.tooltip.formatting"
+                :placeholder="$t('edit.additionalConfig.tooltip.formatting.placeholder')"
+              />
+            </b-form-group>
+          </b-col>
+
+          <b-col
+            cols="12"
+            md="6"
+          >
+            <b-form-group
+              label="Number format"
+              label-class="text-primary"
+            >
+              <b-input
+                v-model="report.tooltip.formatting"
+                placeholder="0.00"
+              />
+            </b-form-group>
+          </b-col>
+        </b-row>
+
+        <b-row>
+          <b-col
+            cols="12"
+            md="6"
+          >
+            <b-form-group
+              label="Prefix"
+              label-class="text-primary"
+            >
+              <b-input
+                v-model="report.tooltip.formatting"
+                placeholder="A"
+              />
+            </b-form-group>
+          </b-col>
+          <b-col
+            cols="12"
+            md="6"
+          >
+            <b-form-group
+              label="Suffix"
+              label-class="text-primary"
+            >
+              <b-input
+                v-model="report.tooltip.formatting"
+                placeholder="$"
+              />
+            </b-form-group>
+          </b-col>
+        </b-row>
+      </div>
     </template>
   </report-edit>
 </template>

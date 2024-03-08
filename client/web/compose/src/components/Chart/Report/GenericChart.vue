@@ -80,7 +80,9 @@
               />
             </b-form-group>
           </b-col>
+        </b-row>
 
+        <b-row>
           <b-col
             cols="12"
             md="6"
@@ -112,7 +114,11 @@
               />
             </b-form-group>
           </b-col>
+        </b-row>
 
+        <b-row
+          class="mb-2"
+        >
           <b-col
             cols="12"
             md="6"
@@ -136,6 +142,7 @@
             <b-form-group
               :label="$t('edit.yAxis.options.label')"
               label-class="text-primary"
+              class="mb-0"
             >
               <b-form-checkbox
                 v-model="report.yAxis.axisType"
@@ -163,6 +170,55 @@
               >
                 {{ $t('edit.yAxis.horizontal.label') }}
               </b-form-checkbox>
+            </b-form-group>
+          </b-col>
+        </b-row>
+
+        <b-row>
+          <b-col
+            cols="12"
+            md="6"
+          >
+            <b-form-group
+              label="Number format"
+              label-class="text-primary"
+            >
+              <b-input
+                v-model="report.tooltip.formatting"
+                placeholder="0.00"
+              />
+            </b-form-group>
+          </b-col>
+
+          <b-col
+            cols="12"
+            md="6"
+          >
+            <b-form-group
+              label="Prefix"
+              label-class="text-primary"
+            >
+              <b-input
+                v-model="report.tooltip.formatting"
+                placeholder="A"
+              />
+            </b-form-group>
+          </b-col>
+        </b-row>
+
+        <b-row>
+          <b-col
+            cols="12"
+            md="6"
+          >
+            <b-form-group
+              label="Suffix"
+              label-class="text-primary"
+            >
+              <b-input
+                v-model="report.tooltip.formatting"
+                placeholder="$"
+              />
             </b-form-group>
           </b-col>
         </b-row>
@@ -311,6 +367,51 @@
             />
           </b-form-group>
         </b-col>
+
+        <b-col
+          cols="12"
+          md="6"
+        >
+          <b-form-group
+            label="Number format"
+            label-class="text-primary"
+          >
+            <b-input
+              v-model="report.tooltip.formatting"
+              placeholder="0.00"
+            />
+          </b-form-group>
+        </b-col>
+
+        <b-col
+          cols="12"
+          md="6"
+        >
+          <b-form-group
+            label="Prefix"
+            label-class="text-primary"
+          >
+            <b-input
+              v-model="report.tooltip.formatting"
+              placeholder="A"
+            />
+          </b-form-group>
+        </b-col>
+
+        <b-col
+          cols="12"
+          md="6"
+        >
+          <b-form-group
+            label="Suffix"
+            label-class="text-primary"
+          >
+            <b-input
+              v-model="report.tooltip.formatting"
+              placeholder="$"
+            />
+          </b-form-group>
+        </b-col>
       </b-row>
     </template>
 
@@ -327,16 +428,46 @@
             md="6"
           >
             <b-form-group
-              :label="$t('edit.additionalConfig.tooltip.formatting.label')"
-              :description="$t('edit.additionalConfig.tooltip.formatting.description')"
+              label="Number format"
               label-class="text-primary"
             >
               <b-input
                 v-model="report.tooltip.formatting"
-                :placeholder="$t('edit.additionalConfig.tooltip.formatting.placeholder')"
+                placeholder="0.00"
               />
             </b-form-group>
           </b-col>
+
+          <b-col
+            cols="12"
+            md="6"
+          >
+            <b-form-group
+              label="Prefix"
+              label-class="text-primary"
+            >
+              <b-input
+                v-model="report.tooltip.formatting"
+                placeholder="A"
+              />
+            </b-form-group>
+          </b-col>
+
+          <b-col
+            cols="12"
+            md="6"
+          >
+            <b-form-group
+              label="Suffix"
+              label-class="text-primary"
+            >
+              <b-input
+                v-model="report.tooltip.formatting"
+                placeholder="$"
+              />
+            </b-form-group>
+          </b-col>
+
           <b-col
             v-if="!hasAxis"
             cols="12"
