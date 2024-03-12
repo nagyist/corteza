@@ -156,6 +156,7 @@ export default {
     ...mapGetters({
       recordPaginationUsable: 'ui/recordPaginationUsable',
       getPageLayouts: 'pageLayout/getByPageID',
+      namespaces: 'namespace/set',
     }),
 
     isRecordPage () {
@@ -304,9 +305,11 @@ export default {
           meta,
         })
 
-        block.xywh = xywh
-        return block
-      })
+        if (block) {
+          block.xywh = xywh
+          return block
+        }
+      }).filter(b => b)
     },
 
     refetchRecords () {
@@ -318,7 +321,9 @@ export default {
       blockID = fetchID({ blockID, meta })
 
       if (meta.namespaceID) {
-        return this.namespace.blocks.find((b) => fetchID(b) === blockID)
+        const { blocks = [] } = this.namespaces.find((n) => n.namespaceID === this.namespace.namespaceID) || {}
+
+        return blocks.find((b) => fetchID(b) === blockID)
       }
 
       return this.page.blocks.find((b) => fetchID(b) === blockID)

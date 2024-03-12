@@ -33,51 +33,9 @@
       </b-col>
 
       <hr
-        v-if="existingLayoutBlocks.length || selectableNamespaceGlobalBlocks"
+        v-if="existingLayoutBlocks.length || selectableGlobalBlocks.length"
         class="w-100"
       >
-
-      <b-col
-        v-if="selectableNamespaceGlobalBlocks.length"
-        cols="12"
-      >
-        <b-input-group class="d-flex w-100">
-          <c-input-select
-            v-model="selectedGlobalBlock"
-            :get-option-label="getBlockLabel"
-            :get-option-key="getOptionKey"
-            :options="selectableNamespaceGlobalBlocks"
-            :reduce="b => b.blockID"
-            placeholder="Select global block from other pages"
-          />
-
-          <b-input-group-append>
-            <b-button
-              v-b-tooltip.noninteractive.hover="{ title: $t('selector.tooltip.clone.noRef'), container: '#body' }"
-              variant="extra-light"
-              :disabled="!selectedGlobalBlock"
-              class="d-flex align-items-center"
-              @click="$emit('select', fetchBlockData(selectedGlobalBlock).clone())"
-            >
-              <font-awesome-icon
-                :icon="['far', 'clone']"
-              />
-            </b-button>
-
-            <b-button
-              v-b-tooltip.noninteractive.hover="{ title: $t('selector.tooltip.clone.ref'), container: '#body' }"
-              variant="extra-light"
-              :disabled="!selectedGlobalBlock"
-              class="d-flex align-items-center"
-              @click="$emit('select', fetchBlockData(selectedGlobalBlock))"
-            >
-              <font-awesome-icon
-                :icon="['far', 'copy']"
-              />
-            </b-button>
-          </b-input-group-append>
-        </b-input-group>
-      </b-col>
 
       <b-col
         v-if="existingLayoutBlocks.length"
@@ -86,7 +44,7 @@
       >
         <b-input-group class="d-flex w-100">
           <c-input-select
-            v-model="selectedLayoutExistingBlock"
+            v-model="selectedLayoutBlock"
             :get-option-label="getBlockLabel"
             :get-option-key="b => b.blockID"
             :options="existingLayoutBlocks"
@@ -98,9 +56,9 @@
             <b-button
               v-b-tooltip.noninteractive.hover="{ title: $t('selector.tooltip.clone.noRef'), container: '#body' }"
               variant="extra-light"
-              :disabled="!selectedLayoutExistingBlock"
+              :disabled="!selectedLayoutBlock"
               class="d-flex align-items-center"
-              @click="$emit('select', fetchBlockData(selectedLayoutExistingBlock).clone())"
+              @click="selectBlock(selectedLayoutBlock, true)"
             >
               <font-awesome-icon
                 :icon="['far', 'clone']"
@@ -110,9 +68,51 @@
             <b-button
               v-b-tooltip.noninteractive.hover="{ title: $t('selector.tooltip.clone.ref'), container: '#body' }"
               variant="extra-light"
-              :disabled="!selectedLayoutExistingBlock"
+              :disabled="!selectedLayoutBlock"
               class="d-flex align-items-center"
-              @click="$emit('select', fetchBlockData(selectedLayoutExistingBlock))"
+              @click="selectBlock(selectedLayoutBlock)"
+            >
+              <font-awesome-icon
+                :icon="['far', 'copy']"
+              />
+            </b-button>
+          </b-input-group-append>
+        </b-input-group>
+      </b-col>
+
+      <b-col
+        v-if="selectableGlobalBlocks.length"
+        cols="12"
+      >
+        <b-input-group class="d-flex w-100">
+          <c-input-select
+            v-model="selectedGlobalBlock"
+            :get-option-label="getBlockLabel"
+            :get-option-key="b => b.blockID"
+            :options="selectableGlobalBlocks"
+            :reduce="b => b.blockID"
+            :placeholder="$t('selector.selectableGlobalBlocks.placeholder')"
+          />
+
+          <b-input-group-append>
+            <b-button
+              v-b-tooltip.noninteractive.hover="{ title: $t('selector.tooltip.clone.noRef'), container: '#body' }"
+              variant="extra-light"
+              :disabled="!selectedGlobalBlock"
+              class="d-flex align-items-center"
+              @click="selectBlock(selectedGlobalBlock, true)"
+            >
+              <font-awesome-icon
+                :icon="['far', 'clone']"
+              />
+            </b-button>
+
+            <b-button
+              v-b-tooltip.noninteractive.hover="{ title: $t('selector.tooltip.clone.ref'), container: '#body' }"
+              variant="extra-light"
+              :disabled="!selectedGlobalBlock"
+              class="d-flex align-items-center"
+              @click="selectBlock(selectedGlobalBlock)"
             >
               <font-awesome-icon
                 :icon="['far', 'copy']"
@@ -150,7 +150,7 @@ export default {
       default: () => [],
     },
 
-    selectableNamespaceGlobalBlocks: {
+    selectableGlobalBlocks: {
       type: Array,
       default: () => [],
     },
@@ -160,7 +160,7 @@ export default {
     return {
       current: undefined,
 
-      selectedLayoutExistingBlock: undefined,
+      selectedLayoutBlock: undefined,
       selectedGlobalBlock: undefined,
 
       types: [
@@ -275,21 +275,25 @@ export default {
 
     setDefaultValues () {
       this.current = undefined
-      this.selectedLayoutExistingBlock = undefined
+      this.selectedLayoutBlock = undefined
       this.selectedGlobalBlock = undefined
       this.types = []
     },
 
-    getOptionKey ({ blockID }) {
-      return blockID
-    },
-
     fetchBlockData (blockID) {
       if (blockID.includes('-')) {
-        return this.selectableNamespaceGlobalBlocks.find((b) => b.blockID === blockID)
+        return this.selectableGlobalBlocks.find((b) => b.blockID === blockID)
       }
 
       return this.existingLayoutBlocks.find((b) => b.blockID === blockID)
+    },
+
+    selectBlock (block, clone = false) {
+      if (clone) {
+        this.$emit('select', this.fetchBlockData(block).clone())
+      } else {
+        this.$emit('select', this.fetchBlockData(block))
+      }
     },
   },
 }

@@ -174,7 +174,7 @@
       <new-block-selector
         :record-page="!!module"
         :existing-layout-blocks="selectableExistingLayoutBlocks"
-        :selectable-namespace-global-blocks="selectableNamespaceGlobalBlocks"
+        :selectable-global-blocks="selectableNamespaceGlobalBlocks"
         style="max-height: 75vh;"
         @select="addBlock"
       />
@@ -443,6 +443,7 @@ export default {
       getModuleByID: 'module/getByID',
       previousPage: 'ui/previousPage',
       namespaces: 'namespace/set',
+      getNamespaceBlocks: 'namespace/getNamespaceBlocksByID',
     }),
 
     trPage: {
@@ -508,19 +509,9 @@ export default {
 
     selectableNamespaceGlobalBlocks () {
       const { namespaceID } = this.namespace
-      const namespace = this.namespaces.find((n) => n.namespaceID === namespaceID)
 
-      if (!namespace) {
-        return []
-      }
-
-      return cloneDeep(namespace.blocks).map((b, i) => {
-        const block = compose.PageBlockMaker(b)
-        block.blockID = `${namespaceID}-${b.blockID}`
-
-        return block
-      }).filter(b => {
-        return !this.blocks.find(({ blockID }) => blockID === b.blockID)
+      return this.getNamespaceBlocks(namespaceID).filter(({ blockID }) => {
+        return !this.usedBlocks.some(b => b.blockID === blockID)
       })
     },
 
@@ -906,7 +897,7 @@ export default {
         this.findPageByID({ ...this.page, force: true }),
         this.findLayoutByID({ ...this.layout }),
       ]).then(async ([page, layout]) => {
-        let blocks = [
+        const blocks = [
           ...page.blocks.filter(({ blockID }) => {
             // Check if block exists in any other layout, if not delete it permanently
             return !this.blocks.some(b => b.blockID === blockID) && this.layouts.some(({ pageLayoutID, blocks }) => pageLayoutID !== layout.pageLayoutID && blocks.some(b => b.blockID === blockID))
@@ -928,7 +919,7 @@ export default {
           .then(async page => {
             const blocks = this.blocks.map(({ blockID, meta, xywh }) => {
               // If the global blocks is a newly created global block
-              if (meta.namespaceID && !blockID.includes('-')) {
+              if (meta.namespaceID && blockID === NoID) {
                 blockID = (updatedGlobalBlocks.find(block => block.meta.tempID === meta.tempID) || {}).blockID
               } else if (blockID === NoID) {
                 blockID = (page.blocks.find(block => block.meta.tempID === meta.tempID) || {}).blockID
@@ -970,31 +961,30 @@ export default {
 
       let { namespaceID, name, slug, enabled, meta } = this.namespace
 
-      // If new blocks are added to global blocks update the ID's
       const newGlobalBlocks = globalBlocks
-        // We can't detect new global block through NOID because there can be an existing local block that
-        // was now made global previously and make a global block which means it does have the NoID added to it
-        .filter(({ blockID }) => !blockID.includes('-'))
+        .filter(({ blockID }) => blockID === NoID)
         .map((block) => {
           block.meta.namespaceID = namespaceID
 
           return block
         })
 
-      // Update existing global blocks
-      const existingGlobalBlocks = this.namespace.blocks
+      const namespace = this.namespaces.find((n) => n.namespaceID === this.namespace.namespaceID)
 
-      // Update the state of the existing global blocks so the include the updated state changes
-      globalBlocks.forEach((block) => {
-        block.blockID = String(block.blockID).replace(`${namespaceID}-`, '')
-        const matchingBlockIndex = existingGlobalBlocks.findIndex(({ blockID }) => blockID === block.blockID)
+      const existingGlobalBlocks = namespace.blocks
 
-        if (matchingBlockIndex > -1) {
-          const normalBlockID = existingGlobalBlocks[matchingBlockIndex].blockID
-          existingGlobalBlocks[matchingBlockIndex] = block
-          existingGlobalBlocks[matchingBlockIndex].blockID = normalBlockID
-        }
-      })
+      globalBlocks
+        .filter(({ blockID }) => blockID !== NoID)
+        .forEach((block) => {
+          const blockID = String(block.blockID).replace(`${namespaceID}-`, '')
+          const matchingBlockIndex = existingGlobalBlocks.findIndex(b => b.blockID === blockID)
+
+          if (matchingBlockIndex > -1) {
+            const normalBlockID = existingGlobalBlocks[matchingBlockIndex].blockID
+            existingGlobalBlocks[matchingBlockIndex] = block
+            existingGlobalBlocks[matchingBlockIndex].blockID = normalBlockID
+          }
+        })
 
       const namespaceBlocks = existingGlobalBlocks.concat(newGlobalBlocks)
 
@@ -1187,9 +1177,9 @@ export default {
             meta,
           }))
 
-          block.blockID = meta.namespaceID ? `${namespaceID}-${block.blockID}` : block.blockID
-
           if (block) {
+            block.blockID = meta.namespaceID ? `${namespaceID}-${block.blockID}` : block.blockID
+
             block.xywh = xywh
             block.meta.hidden = !!meta.hidden
             tempBlocks.push(block)
@@ -1255,11 +1245,9 @@ export default {
       blockID = fetchID({ blockID, meta })
 
       if (meta.namespaceID) {
-        const namespace = this.namespaces.find((n) => n.namespaceID === this.namespace.namespaceID)
+        const { blocks = [] } = this.namespaces.find((n) => n.namespaceID === this.namespace.namespaceID) || {}
 
-        if (namespace) {
-          return namespace.blocks.find((b) => fetchID(b) === blockID)
-        }
+        return blocks.find((b) => fetchID(b) === blockID)
       }
 
       return this.page.blocks.find((b) => fetchID(b) === blockID)
@@ -1293,4 +1281,4 @@ div.toolbox {
     right: auto;
   }
 }
-</style>
+</style>, includes

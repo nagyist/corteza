@@ -130,11 +130,11 @@
           </b-form-checkbox>
           <b-form-checkbox
             v-if="block.kind !== 'Tabs'"
-            v-model="block.meta.namespaceID"
+            :checked="block.meta.namespaceID"
             :value="namespace.namespaceID"
-            :disabled="alreadyGlobalBlock"
             switch
             class="mb-2"
+            @change="updateGlobalState"
           >
             {{ $t('general.globalBlock.label') }}
           </b-form-checkbox>
@@ -238,12 +238,6 @@ export default {
     },
   },
 
-  data () {
-    return {
-      alreadyGlobalBlock: false,
-    }
-  },
-
   computed: {
     textVariants () {
       return [
@@ -275,21 +269,19 @@ export default {
     },
   },
 
-  watch: {
-    block: {
-      immediate: true,
-      handler (block) {
-        if (block.meta.namespaceID && !this.alreadyGlobalBlock) {
-          this.alreadyGlobalBlock = !!block.meta.namespaceID
-        }
-      },
-    },
-  },
-
   methods: {
     updateRefresh (e) {
       // If value is less than 5 but greater than 0 make it 5. Otherwise value stays the same.
       this.block.options.refreshRate = e.target.value < 5 && e.target.value > 0 ? 5 : e.target.value
+    },
+    updateGlobalState (value) {
+      this.block.blockID = NoID
+
+      if (value) {
+        this.block.meta.namespaceID = value
+      } else {
+        this.block.meta.namespaceID = undefined
+      }
     },
   },
 }
@@ -298,4 +290,4 @@ export default {
 .mh-tab {
   max-height: calc(100vh - 16rem);
 }
-</style>import { watch } from 'fs'
+</style>
