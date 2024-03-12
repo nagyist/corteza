@@ -96,8 +96,13 @@ export default {
   },
 
   watch: {
-    fields (fields) {
-      this.filteredFields = this.module.filterFields(fields)
+    fields: {
+      immediate: true,
+      handler (fields) {
+        if (fields) {
+          this.filteredFields = this.module.filterFields(fields)
+        }
+      },
     },
   },
 

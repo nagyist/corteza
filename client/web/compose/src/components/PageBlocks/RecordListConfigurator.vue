@@ -118,7 +118,7 @@
                   variant="light"
                   :module="recordListModule"
                   :fields="options.textStyles.noWrapFields || []"
-                  :field-subset="options.fields"
+                  :field-subset="options.fields.length ? options.fields : recordListModule.fields"
                   @updateFields="onUpdateTextWrapOption"
                 >
                   {{ $t('recordList.record.configureNonWrappingFelids') }}
