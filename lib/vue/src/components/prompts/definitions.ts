@@ -11,6 +11,12 @@ const variants = [
   { value: 'dark', text: 'Dark' },
 ]
 
+const linkClickVariants = [
+  { value: 'newTab', text: 'Open link in a new tab' },
+  { value: 'sameTab', text: 'Open link in the same tab' },
+  { value: 'modal', text: 'Open in a modal' },
+]
+
 export const prompts = Object.freeze([
   {
     ref: 'redirect',
@@ -19,7 +25,7 @@ export const prompts = Object.freeze([
       { name: 'owner', types: ['User', 'ID'], required: false },
       { name: 'url', types: ['String'], required: true },
       { name: 'delay', types: ['Integer'], meta: { description: 'Redirection delay in seconds' } },
-      { name: 'openInNewTab', types: ['Boolean'] }
+      { name: 'openLink', types: ['String'], meta: { visual: { input: { type: 'select', properties: { options: linkClickVariants }, default: 'sameTab' } } } },
     ],
   },
   {
@@ -31,7 +37,7 @@ export const prompts = Object.freeze([
       { name: 'params', types: ['KV'] },
       { name: 'query', types: ['KV'] },
       { name: 'delay', types: ['Integer'], meta: { description: 'Redirection delay in seconds' } },
-      { name: 'openInNewTab', types: ['Boolean'] }
+      { name: 'openLink', types: ['String'], meta: { visual: { input: { type: 'select', properties: { options: linkClickVariants }, default: 'sameTab' } } } },
     ],
   },
   {
@@ -47,7 +53,7 @@ export const prompts = Object.freeze([
       { name: 'record', types: ['ID', 'ComposeRecord'] },
       { name: 'edit', types: ['Boolean'] },
       { name: 'delay', types: ['Integer'], meta: { description: 'Redirection delay in seconds' } },
-      { name: 'openInNewTab', types: ['Boolean'] }
+      { name: 'openLink', types: ['String'], meta: { visual: { input: { type: 'select', properties: { options: linkClickVariants }, default: 'sameTab' } } } },
     ],
   },
   {
@@ -61,7 +67,7 @@ export const prompts = Object.freeze([
       { name: 'owner', types: ['User', 'ID'], required: false },
       { name: 'title', types: ['String'] },
       { name: 'message', types: ['String'], required: true },
-      { name: 'variant', types: ['String'], meta: { visual: { input: { type: 'select', properties: { options: variants } } } } },
+      { name: 'variant', types: ['String'], meta: { visual: { input: { type: 'select', properties: { options: variants }, default: 'primary' } } } },
       { name: 'timeout', types: ['Integer'], meta: { description: 'How long do we show the notification in seconds' } },
     ],
   },
@@ -73,7 +79,7 @@ export const prompts = Object.freeze([
       { name: 'title', types: ['String'] },
       { name: 'message', types: ['String'], required: true },
       { name: 'buttonLabel', types: ['String'] },
-      { name: 'buttonVariant', types: ['String'], meta: { visual: { input: { type: 'select', properties: { options: variants } } } } },
+      { name: 'buttonVariant', types: ['String'], meta: { visual: { input: { type: 'select', properties: { options: variants }, default: 'primary' } } } },
       { name: 'buttonValue', types: ['Any'] },
     ],
   },
@@ -85,10 +91,10 @@ export const prompts = Object.freeze([
       { name: 'title', types: ['String'] },
       { name: 'message', types: ['String'], required: true },
       { name: 'confirmButtonLabel', types: ['String'] },
-      { name: 'confirmButtonVariant', types: ['String'], meta: { visual: { input: { type: 'select', properties: { options: variants } } } } },
+      { name: 'confirmButtonVariant', types: ['String'], meta: { visual: { input: { type: 'select', properties: { options: variants }, default: 'primary' } } } },
       { name: 'confirmButtonValue', types: ['Any'] },
       { name: 'rejectButtonLabel', types: ['String'] },
-      { name: 'rejectButtonVariant', types: ['String'], meta: { visual: { input: { type: 'select', properties: { options: variants } } } } },
+      { name: 'rejectButtonVariant', types: ['String'], meta: { visual: { input: { type: 'select', properties: { options: variants }, default: 'danger' } } } },
       { name: 'rejectButtonValue', types: ['Any'] },
     ],
     results: [
@@ -150,7 +156,7 @@ export const prompts = Object.freeze([
     parameters: [
       { name: 'owner', types: ['User', 'ID'], required: false },
       { name: 'title', types: ['String'] },
-      { name: 'variant', types: ['String'], meta: { visual: { input: { type: 'select', properties: { options: variants } } } } },
+      { name: 'variant', types: ['String'], meta: { visual: { input: { type: 'select', properties: { options: variants }, default: 'primary' } } } },
       { name: 'message', types: ['String'], required: true },
       { name: 'label', types: ['String'] },
       {

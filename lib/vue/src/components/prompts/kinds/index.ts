@@ -61,17 +61,18 @@ const definitions: Record<string, PromptDefinition> = {
     handler: function (v): void {
       const url = pVal(v, 'url')
       const delay = (pVal(v, 'delay') || 0) as number
-      const openInNewTab = pVal(v, 'openInNewTab')
+      const openLink = pVal(v, 'openLink')
+
       if (url !== undefined) {
         console.debug('redirect to %s via prompt in %d sec', url, delay)
         setTimeout(() => {
-          if (openInNewTab) {
+          if (openLink === 'newTab') {
             // @ts-ignore
             window.open(url, '_blank')
-          } else {
-            // @ts-ignore
-            window.location = url
           }
+
+          // @ts-ignore
+          window.location = url
         }, delay * 1000)
       }
     },
@@ -83,20 +84,20 @@ const definitions: Record<string, PromptDefinition> = {
       const params = pVal(v, 'params')
       const query = pVal(v, 'query')
       const delay = (pVal(v, 'delay') || 0) as number
-      const openInNewTab = pVal(v, 'openInNewTab')
+      const openLink = pVal(v, 'openLink')
       if (name !== undefined) {
         console.debug('reroute to %s via prompt in %d sec', name, delay, { params, query })
         setTimeout(() => {
           const routeParams = { name, params, query }
-          if (openInNewTab) {
+          if (openLink === 'newTab') {
             // @ts-ignore
             const url = this.$router.resolve(routeParams).href
             // @ts-ignore
             window.open(url, '_blank')
-          } else {
-            // @ts-ignore
-            this.$router.push(routeParams)
           }
+
+          // @ts-ignore
+          this.$router.push(routeParams)
         }, delay * 1000)
       }
     },
@@ -109,7 +110,7 @@ const definitions: Record<string, PromptDefinition> = {
       const record = pVal(v, 'record')
       const edit = !!pVal(v, 'edit')
       const delay = (pVal(v, 'delay') || 0) as number
-      const openInNewTab = pVal(v, 'openInNewTab')
+      const openLink = pVal(v, 'openLink')
 
       let namespaceID = ''
       let slug = ''
@@ -138,7 +139,9 @@ const definitions: Record<string, PromptDefinition> = {
           // @ts-ignore
           const { set: nn } = await this.$ComposeAPI.namespaceList({ slug: namespace as string })
           if (!nn || nn.length !== 1) {
-            throw new Error('namespace not resolved')
+            // @ts-ignore
+            this.toastDanger('namespace not resolved', 'prompt error')
+            return
           }
 
           namespaceID = nn[0].namespaceID
@@ -154,7 +157,9 @@ const definitions: Record<string, PromptDefinition> = {
           // @ts-ignore
           const { set: mm } = await this.$ComposeAPI.moduleList({ handle: module as string, namespaceID })
           if (!mm || mm.length !== 1) {
-            throw new Error('module not resolved')
+            // @ts-ignore
+            this.toastDanger('module not resolved', 'prompt error')
+            return
           }
 
           moduleID = mm[0].moduleID
@@ -171,18 +176,16 @@ const definitions: Record<string, PromptDefinition> = {
       // @ts-ignore
       const { set: pp } = await this.$ComposeAPI.pageList({ moduleID, namespaceID })
       if (!pp || pp.length !== 1) {
-        throw new Error('record page not resolved')
+        // @ts-ignore
+        this.toastDanger('record page not resolved', 'prompt error')
+        return
       }
       pageID = pp[0].pageID
 
       // @ts-ignore
       if (this.$root.$options.name === 'compose') {
-        if (!edit && !recordID) {
-          throw new Error('invalid record page prompt configuration')
-        }
-
         let name = 'page.record'
-        if (edit) {
+        if (edit || recordID === '') {
           name += recordID ? '.edit' : '.create'
         }
 
@@ -196,7 +199,13 @@ const definitions: Record<string, PromptDefinition> = {
             window.location.reload()
           } else {
             const routeParams = { name, params: { recordID, pageID, slug } }
-            if (openInNewTab) {
+            if (openLink === 'modal') {
+              // @ts-ignore
+              this.$root.$emit('show-record-modal', {
+                recordID,
+                recordPageID: pageID,
+              })
+            } else if (openLink === 'newTab') {
               // @ts-ignore
               const url = this.$router.resolve(routeParams).href
               // @ts-ignore
